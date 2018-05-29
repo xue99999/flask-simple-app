@@ -2,6 +2,8 @@
 
 {% block content %}
 {% for l in names  %}
-<p> {{l.title}} </p>
+<h3>
+<a href='/files/{{l.id}}'> {{l.title}} </a>
+</h3>
 {% endfor %}
 {% endblock %}
