@@ -5,12 +5,16 @@ import json
 from datetime import datetime
 from flask import Flask, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
+from pymongo import MongoClient
 
 app = Flask(__name__)
 app.config['TEMPLATES_NOT_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/shiyanlou'
 
 db = SQLAlchemy(app)
+
+client = MongoClient('127.0.0.1', 27017)
+mongo_db = client.shiyanlou
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -33,6 +37,16 @@ class File(db.Model):
 
     def __repr__(self):
         return '<File %r>' % self.title
+
+    def add_tag(self, tag_name):
+        print(self.id)
+        
+        mongo_db.user.insert_one({'id': self.id, 'tag': [tag_name]})
+
+    @property
+    def tags(self):
+        tag_list = mongo_db.file.find({'id': self.id})
+        return tag_list
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,8 +81,7 @@ def file(file_id):
 
     return render_template('file.html', article=article)
 
-'''
-create table and data
+#create table and data
 db.create_all()
 java = Category('Java')
 python = Category('Python')
@@ -79,4 +92,9 @@ db.session.add(python)
 db.session.add(file1)
 db.session.add(file2)
 db.session.commit()
-'''
+
+file1.add_tag('tech')
+file1.add_tag('java')
+file1.add_tag('linux')
+file2.add_tag('tech')
+file2.add_tag('python')
