@@ -58,9 +58,6 @@ class File(db.Model):
                 tags.pop(idx)
                 mongo_db.file.update_one({'id': self.id, 'tags': tags})
 
-
-
-
     @property
     def tags(self):
         tag_list = mongo_db.file.find({'id': self.id})
@@ -76,8 +73,6 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
-base = '/home/shiyanlou/files'
-
 
 @app.errorhandler(404)
 def not_found(error):
@@ -86,6 +81,9 @@ def not_found(error):
 @app.route('/')
 def index():
     file = File.query.all()
+    for f in file:
+        tags = mongo_db.file.find({'id': f.id}).tags
+        f.tags = tags
     
     return render_template('index.html', names=file)
 
@@ -99,20 +97,25 @@ def file(file_id):
 
     return render_template('file.html', article=article)
 
-#create table and data
-db.create_all()
-java = Category('Java')
-python = Category('Python')
-file1 = File('Hello Java', 'File Content - Java is cool!', java)
-file2 = File('Hello Python', 'File Content - Python is cool!', python)
-db.session.add(java)
-db.session.add(python)
-db.session.add(file1)
-db.session.add(file2)
-db.session.commit()
 
-file1.add_tag('tech')
-file1.add_tag('java')
-file1.add_tag('linux')
-file2.add_tag('tech')
-file2.add_tag('python')
+if __name__ == '__main__':
+
+
+    #create table and data
+    db.create_all()
+    java = Category('Java')
+    python = Category('Python')
+    file1 = File('Hello Java', 'File Content - Java is cool!', java)
+    file2 = File('Hello Python', 'File Content - Python is cool!', python)
+    db.session.add(java)
+    db.session.add(python)
+    db.session.add(file1)
+    db.session.add(file2)
+    db.session.commit()
+
+    file1.add_tag('tech')
+    file1.add_tag('java')
+    file1.add_tag('linux')
+    file2.add_tag('tech')
+    file2.add_tag('python')
+    

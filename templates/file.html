@@ -6,9 +6,9 @@
 <p> {{article.category.name}} </p>
 <p> {{article.created_time}} </p>
 
-{{% for tag in article.tags %}}
-<span> {{tag}} </span>
-{{% endfor %}}
+{% for t in article.tags %}
+<span> {{t}} </span>
+{% endfor %}
 
 <p> {{article.content}} </p>
 
