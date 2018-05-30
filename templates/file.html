@@ -1,5 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
 <h1> {{article.title}} </h1>
 <p> {{article.category.name}} </p>
 <p> {{article.created_time}} </p>
+
+{{% for tag in article.tags %}}
+<span> {{tag}} </span>
+{{% endfor %}}
+
 <p> {{article.content}} </p>
 
+{% endblock %}

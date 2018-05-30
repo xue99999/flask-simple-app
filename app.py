@@ -39,9 +39,27 @@ class File(db.Model):
         return '<File %r>' % self.title
 
     def add_tag(self, tag_name):
-        print(self.id)
+        file = mongo_db.file.find({'id': self.id})
+        if file:
+            tags = file.tags
+            if tag_name not in tags:
+                tags.append(tag_name)
+                mongo_db.file.update_one({'id': self.id, 'tags': tags})
+        else:
+            mongo_db.file.insert_one({'id': self.id, 'tags': [tag_name]})
+
         
-        mongo_db.user.insert_one({'id': self.id, 'tag': [tag_name]})
+    def remove_tag(self, tag_name):
+        file = mongo_db.file.find({'id': self.id})
+        if file:
+            tags = file.tags 
+            if tag_name in tags:
+                idx = tags.index(tag_name)
+                tags.pop(idx)
+                mongo_db.file.update_one({'id': self.id, 'tags': tags})
+
+
+
 
     @property
     def tags(self):
