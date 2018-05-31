@@ -39,29 +39,33 @@ class File(db.Model):
         return '<File %r>' % self.title
 
     def add_tag(self, tag_name):
-        file = mongo_db.file.find({'id': self.id})
-        if file:
-            tags = file.tags
+        file_item = mongo_db.file.find_one({'file_id': self.id})
+        if file_item:
+            tags = file_item.tags
             if tag_name not in tags:
                 tags.append(tag_name)
-                mongo_db.file.update_one({'id': self.id, 'tags': tags})
+                mongo_db.file.update_one({'file_id': self.id}, {'$set': {'tags': tags}})
         else:
-            mongo_db.file.insert_one({'id': self.id, 'tags': [tag_name]})
+            tags = [tag_name]
+            mongo_db.file.insert_one({'file_id': self.id, 'tags': tags})
 
         
     def remove_tag(self, tag_name):
-        file = mongo_db.file.find({'id': self.id})
-        if file:
-            tags = file.tags 
+        file_item = mongo_db.file.find_one({'file_id': self.id})
+        if file_item:
+            tags = file_item.tags 
             if tag_name in tags:
-                idx = tags.index(tag_name)
-                tags.pop(idx)
-                mongo_db.file.update_one({'id': self.id, 'tags': tags})
+                tags.remove(tag_name)
+                new_tags = tags
+                mongo_db.file.update_one({'file_id': self.id},{'$set': {'tags': new_tags}})
 
     @property
     def tags(self):
-        tag_list = mongo_db.file.find({'id': self.id})
-        return tag_list
+        file_item = mongo_db.file.find({'file_id': self.id})
+        if file_item:
+            return file_item['tags']
+        else:
+            return []
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
