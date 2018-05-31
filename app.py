@@ -41,28 +41,33 @@ class File(db.Model):
     def add_tag(self, tag_name):
         file_item = mongo_db.file.find_one({'file_id': self.id})
         if file_item:
-            tags = file_item.tags
+            tags = file_item['tags']
             if tag_name not in tags:
                 tags.append(tag_name)
-                mongo_db.file.update_one({'file_id': self.id}, {'$set': {'tags': tags}})
+            mongo_db.file.update_one({'file_id': self.id}, {'$set': {'tags': tags}})
         else:
             tags = [tag_name]
             mongo_db.file.insert_one({'file_id': self.id, 'tags': tags})
+
+        return tags
 
         
     def remove_tag(self, tag_name):
         file_item = mongo_db.file.find_one({'file_id': self.id})
         if file_item:
-            tags = file_item.tags 
+            tags = file_item['tags']
             if tag_name in tags:
                 tags.remove(tag_name)
                 new_tags = tags
                 mongo_db.file.update_one({'file_id': self.id},{'$set': {'tags': new_tags}})
+                return new_tags
+            return []
 
     @property
     def tags(self):
         file_item = mongo_db.file.find({'file_id': self.id})
         if file_item:
+            print(file_item)
             return file_item['tags']
         else:
             return []
