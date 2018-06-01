@@ -5,5 +5,8 @@
 <h3>
 <a href='/files/{{l.id}}'> {{l.title}} </a>
 </h3>
+{% for tag in l.tags %}
+<span> {{tag}} </span>
+{% endfor %}
 {% endfor %}
 {% endblock %}

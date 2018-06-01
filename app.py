@@ -68,7 +68,7 @@ class File(db.Model):
 
     @property
     def tags(self):
-        file_item = mongo_db.files.find({'file_id': self.id})
+        file_item = mongo_db.files.find_one({'file_id': self.id})
         if file_item:
             print(file_item)
             return file_item['tags']
